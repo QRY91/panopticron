@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>panopticron</title>
+<meta name="description" content="One wall for my web real estate: a lean Go + SQLite monitoring wall, rebuilt from a 2025 internship project.">
+<style>
+  :root { --bg:#3f3f3f; --sunken:#353535; --text:#dcdccc; --muted:#9a9a8a; --accent:#f0dfaf;
+          --good:#7f9f7f; --warn:#f0dfaf; --error:#cc9393; --neutral:#5c5c5c;
+          --font:"Atkinson Hyperlegible", system-ui, sans-serif; --mono:"Atkinson Hyperlegible Mono", ui-monospace, monospace; }
+  html { background: var(--bg); color: var(--text); font: 16px/1.55 var(--font); }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 2rem; box-sizing: border-box; }
+  main { max-width: 38rem; }
+  h1 { font-family: var(--mono); color: var(--accent); font-size: 1.7rem; letter-spacing: .04em; margin: 1rem 0 .2rem; }
+  p { margin: .7rem 0; }
+  a { color: var(--accent); }
+  ul { padding-left: 1.2rem; }
+  li { margin: .3rem 0; }
+  .muted { color: var(--muted); }
+  /* the signature: one cluster — three big tiles for the top problems, four small ones in the corner */
+  .cluster { width: 82px; height: 82px; padding: 2px; background: var(--sunken); border-radius: 6px;
+             display: grid; grid-template-columns: repeat(2, 38px); grid-template-rows: repeat(2, 38px); gap: 2px; }
+  .cluster i { display: block; border-radius: 4px; }
+  .sub { padding: 2px; background: var(--sunken); border-radius: 4px; display: grid; grid-template-columns: repeat(2, 16px); grid-template-rows: repeat(2, 16px); gap: 2px; }
+  .sub i { border-radius: 2px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="cluster" aria-hidden="true">
+    <i style="background:var(--good)"></i><i style="background:var(--good)"></i><i style="background:var(--warn)"></i>
+    <div class="sub"><i style="background:var(--good)"></i><i style="background:var(--good)"></i><i style="background:var(--neutral)"></i><i style="background:#3b3b3b"></i></div>
+  </div>
+  <h1>panopticron</h1>
+  <p>One wall for my web real estate. Every domain I run is a cluster of coloured tiles — does the name resolve, does the page answer, is the certificate healthy, is the registration about to lapse, did the last deploy land, is CI green — and one integer sorts the wall, most urgent first. A human can override that integer, visibly.</p>
+  <p><em>Panopticon, inverted: garage door open, everyone watches together.</em></p>
+  <ul>
+    <li><a href="https://github.com/QRY91/panopticron">source</a> — Go + SQLite, about two thousand lines, no JavaScript</li>
+    <li><a href="https://qry.zone/panopticron/">the 2025 story</a> — the internship version this rebuilds: 13,248 lines down to ~2,000, same signal on screen</li>
+  </ul>
+  <p class="muted">The live wall goes up here once it has a home. Until then, this page.</p>
+</main>
+</body>
+</html>
