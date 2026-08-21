@@ -62,6 +62,17 @@ web.go:  GET /           the wall: LensClusters sorted by sort_key
 - **No JavaScript.** The wall `<meta refresh>`es every minute; the lifeline is
   server-rendered SVG.
 
+## Scope freeze
+
+Written before the first line, because the 2025 version died of features. Not
+in this repo, on purpose: a login system (one Basic-auth password guards the one
+write), themes (one, Zenburn), client-side JavaScript, an ORM or migration
+framework (one `schema` string), a mock-data layer (the config points at real
+sites), dashboards-about-the-dashboard (`/status` is a table of poller runs),
+metrics time series (events are recorded on change only), notifications,
+multi-user anything. If one of these is ever actually needed, only that one
+gets built.
+
 ## Lineage
 
 This is the lean rebuild of a 2025 internship project (Next 14 + Refine + MUI +
