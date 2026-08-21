@@ -4,8 +4,8 @@ One wall for my web real estate. Every domain I run is a cluster of coloured
 tiles — does the name resolve, does the page answer, is the certificate healthy,
 is the registration about to lapse, did the last deploy land, is CI green — and
 one integer sorts the wall, most urgent first. A human can override that
-integer, visibly. The introduction lives at **[panopticron.com](https://panopticron.com)**;
-the wall itself goes up at `wall.panopticron.com` once it has a home. It watches
+integer, visibly. The introduction lives at **[panopticron.com](https://panopticron.com)**. A
+public, always-on instance is a later luxury; `go run .` is the demo. It watches
 its own siblings.
 
 *Panopticon, inverted: garage door open, everyone watches together.

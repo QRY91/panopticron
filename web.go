@@ -189,7 +189,7 @@ func (a *app) wall(w http.ResponseWriter, r *http.Request) {
 var ranges = []struct {
 	Name string
 	Back time.Duration
-}{{"7d", 7 * 24 * time.Hour}, {"30d", 30 * 24 * time.Hour}, {"90d", 90 * 24 * time.Hour}, {"all", 0}}
+}{{"1d", 24 * time.Hour}, {"7d", 7 * 24 * time.Hour}, {"30d", 30 * 24 * time.Hour}, {"90d", 90 * 24 * time.Hour}, {"all", 0}}
 
 type projectView struct {
 	page
@@ -212,7 +212,7 @@ func (a *app) projectPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	now := time.Now()
-	rng, since := ranges[1], now.Add(-ranges[1].Back)
+	rng, since := ranges[2], now.Add(-ranges[2].Back)
 	for _, r2 := range ranges {
 		if r2.Name == r.URL.Query().Get("range") {
 			rng = r2

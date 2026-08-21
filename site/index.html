@@ -76,7 +76,7 @@
   </div>
   <h1>panopticron</h1>
   <p class="lede">One wall for everything I run on the web. Every domain is a cluster of coloured tiles, the wall sorts itself by urgency, and a human can overrule it — in the open.</p>
-  <p class="toc"><a href="#colour">read it by colour</a> <a href="#number">one number</a> <a href="#lifeline">the lifeline</a> <a href="#door">garage door open</a> <a href="#rebuild">the rebuild</a> <a href="#wall">the wall, live</a> <a href="mailto:info@panopticron.com">info@panopticron.com</a></p>
+  <p class="toc"><a href="#colour">read it by colour</a> <a href="#number">one number</a> <a href="#lifeline">the lifeline</a> <a href="#door">garage door open</a> <a href="#rebuild">the rebuild</a> <a href="#wall">the wall</a> <a href="mailto:info@panopticron.com">info@panopticron.com</a></p>
 </section>
 
 <section id="glance">
@@ -161,11 +161,16 @@
 </section>
 
 <section id="wall">
-  <h2>the wall, live</h2>
+  <h2>the wall</h2>
   <figure>
-    <img class="wall" src="wall.png" width="1200" height="532" alt="The panopticron wall: six projects as lens clusters, sorted by priority — two red at the top, four calm at 10000." loading="lazy">
-    <figcaption>The wall this afternoon, watching qry.zone, bokondo.net, chasmlogic.com, slopsquid.com, sloppydisq.com — and itself. The live, self-refreshing version moves into this spot at <span class="mono">wall.panopticron.com</span> as soon as it has a home.</figcaption>
+    <img class="wall" src="wall.png" width="1200" height="532" alt="The panopticron wall: six projects as lens clusters, sorted by priority. sloppydisq.com is red with a manual override of 9000; the other five are calm at 10000." loading="lazy">
+    <figcaption>The wall as it ran this afternoon: six domains, itself included. sloppydisq.com is red on purpose — registered today, nothing deployed yet — so a human set it to 9000 and the ✎ says so.</figcaption>
   </figure>
+  <figure>
+    <img class="wall" src="project.png" width="1200" height="1119" alt="One project page: five green lenses, the lifeline of the day stepping from 1 up to 10000, the override field, and the event log." loading="lazy">
+    <figcaption>One project, one page: the lenses, the lifeline of the day — the domain came back from a broken zone at 11:13, CI went green at 11:21 — the override field, and the event log that the chart is drawn from.</figcaption>
+  </figure>
+  <p class="muted">It runs on my machine against the real domains. A public, always-on instance is a later luxury; the program is small enough that <span class="mono">go run .</span> is the demo.</p>
 </section>
 
 </main>
