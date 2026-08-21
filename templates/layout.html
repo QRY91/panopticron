@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="/static/style.css">
 {{if .Refresh}}<meta http-equiv="refresh" content="{{.Refresh}}">{{end}}
 </head>
-<body>
+<body{{if .Embed}} class="embed"{{end}}>
 <header class="top">
   <a class="brand" href="/">panopticron</a>
   <nav><a href="/">wall</a><a href="/status">status</a><a href="https://github.com/QRY91/panopticron">source</a></nav>

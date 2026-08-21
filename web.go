@@ -81,7 +81,12 @@ func (a *app) routes() http.Handler {
 	mux.HandleFunc("GET /status", a.statusPage)
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) { fmt.Fprintln(w, "ok") })
 	mux.Handle("GET /static/", http.FileServerFS(a.assets()))
-	return mux
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h := w.Header()
+		h.Set("Content-Security-Policy", "frame-ancestors 'self' https://panopticron.com https://*.panopticron.com")
+		h.Set("X-Content-Type-Options", "nosniff")
+		mux.ServeHTTP(w, r)
+	})
 }
 
 func (a *app) assets() fs.FS {
@@ -121,6 +126,7 @@ type page struct {
 	Refresh int // seconds; 0 = none
 	Version string
 	Now     time.Time
+	Embed   bool // ?embed=1: no header/footer, for framing into the landing page
 }
 
 func (a *app) page(title string, refresh int) page {
@@ -159,6 +165,7 @@ func (a *app) wall(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := wallView{page: a.page("wall", 60)}
+	v.Embed = r.URL.Query().Get("embed") != ""
 	for _, p := range ps {
 		wp := wallProject{Project: p, Cluster: cluster(p.Lenses)}
 		for _, l := range p.Lenses {

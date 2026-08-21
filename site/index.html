@@ -3,43 +3,174 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>panopticron</title>
-<meta name="description" content="One wall for my web real estate: a lean Go + SQLite monitoring wall, rebuilt from a 2025 internship project.">
+<meta name="color-scheme" content="dark">
+<title>panopticron — one wall, door open</title>
+<meta name="description" content="Panopticron: a monitoring wall for my own web real estate. Each project is a cluster of coloured tiles, one number sorts the wall, a human can overrule it in the open. The panopticon, inverted.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#3f3f3f; --sunken:#353535; --text:#dcdccc; --muted:#9a9a8a; --accent:#f0dfaf;
-          --good:#7f9f7f; --warn:#f0dfaf; --error:#cc9393; --neutral:#5c5c5c;
+  :root { --bg:#3f3f3f; --sunken:#353535; --surface:#474747; --border:#4e4e4e; --text:#dcdccc; --muted:#9a9a8a; --accent:#f0dfaf;
+          --good:#7f9f7f; --warn:#f0dfaf; --error:#cc9393; --neutral:#5c5c5c; --tile-text:#2b2b2b;
           --font:"Atkinson Hyperlegible", system-ui, sans-serif; --mono:"Atkinson Hyperlegible Mono", ui-monospace, monospace; }
-  html { background: var(--bg); color: var(--text); font: 16px/1.55 var(--font); }
-  body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 2rem; box-sizing: border-box; }
-  main { max-width: 38rem; }
-  h1 { font-family: var(--mono); color: var(--accent); font-size: 1.7rem; letter-spacing: .04em; margin: 1rem 0 .2rem; }
-  p { margin: .7rem 0; }
-  a { color: var(--accent); }
-  ul { padding-left: 1.2rem; }
-  li { margin: .3rem 0; }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); color: var(--text); font: 17px/1.6 var(--font); }
+  body { margin: 0; }
+  main { width: min(44rem, 100% - 2.5rem); margin: 0 auto; padding: 3rem 0 4rem; }
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid #8a7f5a; }
+  a:hover { border-bottom-color: var(--accent); }
+  h1 { font-family: var(--mono); color: var(--accent); font-size: 2rem; letter-spacing: .04em; margin: 1.2rem 0 .4rem; font-weight: 700; }
+  h2 { font-family: var(--mono); color: var(--accent); font-size: 1.05rem; font-weight: 700; letter-spacing: .03em; margin: 0 0 .8rem; }
+  p { margin: 0 0 1rem; }
+  section { padding: 2.2rem 0; border-top: 1px solid var(--border); }
+  section:first-of-type { border-top: 0; padding-top: 0; }
+  .lede { font-size: 1.2rem; line-height: 1.5; }
   .muted { color: var(--muted); }
-  /* the signature: one cluster — three big tiles for the top problems, four small ones in the corner */
-  .cluster { width: 82px; height: 82px; padding: 2px; background: var(--sunken); border-radius: 6px;
-             display: grid; grid-template-columns: repeat(2, 38px); grid-template-rows: repeat(2, 38px); gap: 2px; }
-  .cluster i { display: block; border-radius: 4px; }
-  .sub { padding: 2px; background: var(--sunken); border-radius: 4px; display: grid; grid-template-columns: repeat(2, 16px); grid-template-rows: repeat(2, 16px); gap: 2px; }
-  .sub i { border-radius: 2px; }
+  .mono { font-family: var(--mono); }
+  .mark { margin-bottom: .2rem; }
+  .toc { font-size: .95rem; color: var(--muted); margin-top: 1.2rem; }
+  .toc a { margin-right: .9rem; white-space: nowrap; }
+  .ov { color: var(--accent); }
+  figure { margin: 1.4rem 0; }
+  figcaption { font-size: .9rem; color: var(--muted); margin-top: .5rem; }
+  ul { padding-left: 1.2rem; margin: 0 0 1rem; }
+  li { margin: .25rem 0; }
+  /* the cluster — same numbers as the live wall: 164 = 4+76+4+76+4, 76 = 4+32+4+32+4 */
+  .cluster { width: 164px; height: 164px; padding: 4px; background: var(--sunken); border-radius: 12px;
+             display: grid; grid-template-columns: repeat(2, 76px); grid-template-rows: repeat(2, 76px); gap: 4px; }
+  .sub { width: 76px; height: 76px; padding: 4px; background: var(--sunken); border-radius: 8px;
+         display: grid; grid-template-columns: repeat(2, 32px); grid-template-rows: repeat(2, 32px); gap: 4px; }
+  .lens { display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; color: var(--tile-text); overflow: hidden; }
+  .lens.good { background: var(--good); } .lens.warn { background: var(--warn); } .lens.error { background: var(--error); }
+  .lens.neutral { background: var(--neutral); color: var(--muted); } .lens.empty { background: #3b3b3b; }
+  .lens .k { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; opacity: .8; }
+  .lens .v { font-family: var(--mono); font-size: 19px; font-weight: 700; line-height: 1.15; }
+  .sub .lens { border-radius: 4px; } .sub .lens .k, .sub .lens .v { display: none; }
+  .small { width: 82px; height: 82px; padding: 2px; border-radius: 6px; grid-template-columns: repeat(2, 38px); grid-template-rows: repeat(2, 38px); gap: 2px; }
+  .small .lens { border-radius: 4px; } .small .lens .k, .small .lens .v { display: none; }
+  .small .sub { width: 38px; height: 38px; padding: 2px; border-radius: 4px; grid-template-columns: repeat(2, 16px); grid-template-rows: repeat(2, 16px); gap: 2px; }
+  .small .sub .lens { border-radius: 2px; }
+  .examples { display: flex; flex-wrap: wrap; gap: 1.2rem .8rem; margin: 1.2rem 0 .4rem; }
+  .examples figure { margin: 0; width: 164px; }
+  .examples figcaption { font-size: .85rem; }
+  .lifeline { width: 100%; height: auto; display: block; background: var(--sunken); border-radius: 2px; }
+  .lifeline .grid { stroke: var(--border); } .lifeline .tick { fill: var(--muted); font: 10px var(--mono); }
+  .lifeline .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+  .lifeline .ev { fill: var(--accent); } .lifeline .ev.ov { fill: var(--sunken); stroke: var(--accent); stroke-width: 2; }
+  img.wall { width: 100%; height: auto; display: block; border: 1px solid var(--border); border-radius: 2px; }
+  table { border-collapse: collapse; font-size: .95rem; margin: .6rem 0 1rem; }
+  td { padding: .15rem 1.2rem .15rem 0; vertical-align: top; }
+  td:first-child { font-family: var(--mono); color: var(--accent); white-space: nowrap; }
+  blockquote { margin: 1rem 0; padding-left: 1rem; border-left: 2px solid var(--accent); color: var(--text); }
+  footer { width: min(44rem, 100% - 2.5rem); margin: 0 auto; padding: 1.4rem 0 3rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .9rem; }
+  footer a { margin-right: 1rem; }
 </style>
 </head>
 <body>
 <main>
-  <div class="cluster" aria-hidden="true">
-    <i style="background:var(--good)"></i><i style="background:var(--good)"></i><i style="background:var(--warn)"></i>
-    <div class="sub"><i style="background:var(--good)"></i><i style="background:var(--good)"></i><i style="background:var(--neutral)"></i><i style="background:#3b3b3b"></i></div>
+
+<section id="top">
+  <div class="cluster small mark" aria-hidden="true">
+    <i class="lens good"></i><i class="lens good"></i><i class="lens warn"></i>
+    <div class="sub"><i class="lens good"></i><i class="lens good"></i><i class="lens neutral"></i><i class="lens empty"></i></div>
   </div>
   <h1>panopticron</h1>
-  <p>One wall for my web real estate. Every domain I run is a cluster of coloured tiles — does the name resolve, does the page answer, is the certificate healthy, is the registration about to lapse, did the last deploy land, is CI green — and one integer sorts the wall, most urgent first. A human can override that integer, visibly.</p>
-  <p><em>Panopticon, inverted: garage door open, everyone watches together.</em></p>
+  <p class="lede">One wall for everything I run on the web. Every domain is a cluster of coloured tiles, the wall sorts itself by urgency, and a human can overrule it — in the open.</p>
+  <p class="toc"><a href="#colour">read it by colour</a> <a href="#number">one number</a> <a href="#lifeline">the lifeline</a> <a href="#door">garage door open</a> <a href="#rebuild">the rebuild</a> <a href="#wall">the wall, live</a> <a href="mailto:info@panopticron.com">info@panopticron.com</a></p>
+</section>
+
+<section id="glance">
+  <h2>four tabs, one nervous glance</h2>
+  <p>It started at a digital agency in 2025. Client sites on Vercel, CI on GitHub, deploy status in one tab, test results in another. When something broke you found out late, because nobody keeps four tabs open all day and actually looks at them. Panopticron put it on one screen: open it, see which projects are fine and which need a hand. No reading. Colour.</p>
+  <p>In 2026 the estate is mine — a handful of domains on Cloudflare, a few repositories, certificates, registrations. Same problem, smaller, and mine to get right. This page is the introduction; <a href="#wall">the wall</a> is the thing.</p>
+</section>
+
+<section id="colour">
+  <h2>read it by colour</h2>
+  <p>Each project is one fixed-size frame: three big tiles for its three biggest problems, four small ones nested in the corner for everything else. Errors rise to the big tiles on their own; the wall puts the worst project top-left. Every tile is a <em>lens</em> — one thing watched: does the name resolve, does the page answer, is the certificate healthy, is the registration about to lapse, did the last deploy land, is CI green.</p>
+  <div class="examples">
+    <figure>
+      <div class="cluster"><div class="lens good"><span class="k">http</span><span class="v">200</span></div><div class="lens good"><span class="k">dns</span><span class="v">ok</span></div><div class="lens good"><span class="k">tls</span><span class="v">57d</span></div>
+        <div class="sub"><i class="lens good"></i><i class="lens neutral"></i><i class="lens empty"></i><i class="lens empty"></i></div></div>
+      <figcaption>calm — nothing to see, which is the point</figcaption>
+    </figure>
+    <figure>
+      <div class="cluster"><div class="lens warn"><span class="k">tls</span><span class="v">9d</span></div><div class="lens good"><span class="k">http</span><span class="v">200</span></div><div class="lens good"><span class="k">dns</span><span class="v">ok</span></div>
+        <div class="sub"><i class="lens good"></i><i class="lens good"></i><i class="lens empty"></i><i class="lens empty"></i></div></div>
+      <figcaption>a certificate with nine days left moves up to a big tile</figcaption>
+    </figure>
+    <figure>
+      <div class="cluster"><div class="lens error"><span class="k">http</span><span class="v">down</span></div><div class="lens error"><span class="k">dns</span><span class="v">fail</span></div><div class="lens good"><span class="k">domain</span><span class="v">266d</span></div>
+        <div class="sub"><i class="lens neutral"></i><i class="lens empty"></i><i class="lens empty"></i><i class="lens empty"></i></div></div>
+      <figcaption>the name doesn't resolve — this one is top-left</figcaption>
+    </figure>
+    <figure>
+      <div class="cluster"><div class="lens error"><span class="k">domain</span><span class="v">unreg</span></div><div class="lens error"><span class="k">http</span><span class="v">down</span></div><div class="lens good"><span class="k">ci</span><span class="v">pass</span></div>
+        <div class="sub"><i class="lens neutral"></i><i class="lens empty"></i><i class="lens empty"></i><i class="lens empty"></i></div></div>
+      <figcaption>a domain nobody registered yet</figcaption>
+    </figure>
+  </div>
+  <p class="muted">Four frames, four stories, no text read. That is the whole interface idea — the <em>LensCluster</em> — and it survived the rebuild untouched.</p>
+</section>
+
+<section id="number">
+  <h2>one number sorts the wall</h2>
+  <p>Every project starts at 10000 — calm. Each problem subtracts a malus; the floor is 1. Lower is more urgent, and that one integer is the entire sorting rule:</p>
+  <table>
+    <tr><td>−8000</td><td>the site is down for visitors (no answer, or the name doesn't resolve)</td></tr>
+    <tr><td>−7000</td><td>the certificate is dead — browsers refuse the connection</td></tr>
+    <tr><td>−5000</td><td>the registration is gone or going</td></tr>
+    <tr><td>−2000</td><td>the last production deploy failed</td></tr>
+    <tr><td>−500</td><td>CI is red</td></tr>
+    <tr><td>−300</td><td>warnings: slow, expiring, stale</td></tr>
+  </table>
+  <p>Then the part that matters. A human can override the number. Type one in, the project moves, and the wall shows a <span class="ov">✎</span> beside it for as long as the override stands. Automation should support decisions, not replace them — and when a person stepped in, it should be visible that they did.</p>
+</section>
+
+<section id="lifeline">
+  <h2>the lifeline</h2>
+  <p>Priority over time. Every change writes one line to an append-only log; the chart is that log drawn as steps. Hollow points are a human's hand.</p>
+  <figure>
+    <svg class="lifeline" viewBox="0 0 640 140" role="img" aria-label="example: priority over time, with one override">
+      <line class="grid" x1="44" y1="10" x2="628" y2="10"/><text class="tick" x="38" y="13" text-anchor="end">10000</text>
+      <line class="grid" x1="44" y1="64" x2="628" y2="64"/><text class="tick" x="38" y="67" text-anchor="end">5000</text>
+      <line class="grid" x1="44" y1="118" x2="628" y2="118"/><text class="tick" x="38" y="121" text-anchor="end">1</text>
+      <path class="line" d="M44 10 H200 V96 H280 V42 H380 V10 H480 V117 H560 V64 H628"/>
+      <circle class="ev" cx="44" cy="10" r="3.5"/><circle class="ev" cx="200" cy="96" r="3.5"/><circle class="ev ov" cx="280" cy="42" r="3.5"/><circle class="ev" cx="380" cy="10" r="3.5"/><circle class="ev" cx="480" cy="117" r="3.5"/><circle class="ev ov" cx="560" cy="64" r="3.5"/>
+      <text class="tick" x="44" y="134">30 days ago</text><text class="tick" x="628" y="134" text-anchor="end">now</text>
+    </svg>
+    <figcaption>An outage, a person saying "I know, it's handled" (hollow), the fix, another outage, another hand.</figcaption>
+  </figure>
+</section>
+
+<section id="door">
+  <h2>garage door open</h2>
+  <p>A panopticon is one hidden watcher and many watched. This is the inverse: the thing being watched is my own work, and the wall is public. Anyone can walk past and look in. Transparency, not surveillance.</p>
+  <p>The register comes from Robin Sloan's note about a woodworker who keeps his shop door propped open all day so that anyone riding past can see the tools and the boards — <em>"I am here, working."</em> A monitoring dashboard is usually the most private page in a company. Making it the front page of a domain is a small, deliberate act of that kind.</p>
+  <p>Panopticron sits with <a href="https://github.com/QRY91/uroboro">uroboro</a> and <a href="https://github.com/QRY91/wherewasi">wherewasi</a> in a family of self-observation tools: things I build to see my own work clearly, with the door open.</p>
+</section>
+
+<section id="rebuild">
+  <h2>the rebuild</h2>
+  <p>The 2025 version — Next 14, Refine, Material UI, Supabase — was 13,248 lines in 90 files, and most of them existed to be graded: six colour themes, a login system nobody used, a component showcase, a marketing page. The idea was roughly eleven percent of the code.</p>
+  <p>The 2026 version is Go and SQLite. One binary, one database file, about two thousand lines, two dependencies, no JavaScript. Kept: the LensCluster, the priority score with its visible override, the lifeline, the log of every poller run. Dropped: everything that wasn't the signal. Same picture on the screen.</p>
   <ul>
-    <li><a href="https://github.com/QRY91/panopticron">source</a> — Go + SQLite, about two thousand lines, no JavaScript</li>
-    <li><a href="https://qry.zone/panopticron/">the 2025 story</a> — the internship version this rebuilds: 13,248 lines down to ~2,000, same signal on screen</li>
+    <li><a href="https://github.com/QRY91/panopticron">source</a> — the rebuild, readable end to end in a sitting</li>
+    <li><a href="https://qry.zone/panopticron/">the 2025 story</a> on qry.zone, and <a href="https://github.com/QRY91/panopticron-demo">its code</a></li>
   </ul>
-  <p class="muted">The live wall goes up here once it has a home. Until then, this page.</p>
+</section>
+
+<section id="wall">
+  <h2>the wall, live</h2>
+  <figure>
+    <img class="wall" src="wall.png" width="1200" height="520" alt="The panopticron wall: six projects as lens clusters, sorted by priority — two red at the top, four calm at 10000." loading="lazy">
+    <figcaption>The wall this afternoon, watching qry.zone, bokondo.net, chasmlogic.com, slopsquid.com, sloppydisq.com — and itself. The live, self-refreshing version moves into this spot at <span class="mono">wall.panopticron.com</span> as soon as it has a home.</figcaption>
+  </figure>
+</section>
+
 </main>
+<footer>
+  <a href="mailto:info@panopticron.com">info@panopticron.com</a><a href="https://github.com/QRY91">QRY91</a><a href="https://qry.zone">qry.zone</a><span>built in the open, door propped.</span>
+</footer>
 </body>
 </html>
