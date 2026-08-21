@@ -4,8 +4,9 @@ One wall for my web real estate. Every domain I run is a cluster of coloured
 tiles — does the name resolve, does the page answer, is the certificate healthy,
 is the registration about to lapse, did the last deploy land, is CI green — and
 one integer sorts the wall, most urgent first. A human can override that
-integer, visibly. Live at **panopticron.com** (soon); it watches its own
-siblings.
+integer, visibly. The introduction lives at **[panopticron.com](https://panopticron.com)**;
+the wall itself goes up at `wall.panopticron.com` once it has a home. It watches
+its own siblings.
 
 *Panopticon, inverted: garage door open, everyone watches together.
 Transparency, not surveillance.*
@@ -30,7 +31,9 @@ Environment, all optional:
 
 `projects.toml` is what it watches — `name`, `url`, `domain`, `repo`, `pages`
 per project; see the file. Membership lives there, versioned; state and history
-live in the SQLite file. `deploy/panopticron.service` is a systemd unit.
+live in the SQLite file. `deploy/panopticron.service` is a systemd unit. `site/`
+is the static introduction page served at panopticron.com by Cloudflare Pages
+(no build step).
 
 ## How it works
 
