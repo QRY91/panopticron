@@ -1,0 +1,36 @@
+{{template "head" .}}
+<h1>status</h1>
+<dl class="facts">
+  <dt>up since</dt><dd>{{date .Started}} <span class="muted">({{ago .Now .Started}})</span></dd>
+  <dt>projects</dt><dd>{{.Projects}}</dd>
+  <dt>events</dt><dd>{{.Events}}</dd>
+  <dt>github</dt><dd>{{if .GitHubToken}}token set{{else}}no token <span class="muted">(60 requests/h, public repos only)</span>{{end}}</dd>
+  <dt>cloudflare pages</dt><dd>{{if .Pages}}enabled{{else}}off <span class="muted">— set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID</span>{{end}}</dd>
+  <dt>overrides</dt><dd>{{if .Overrides}}enabled{{else}}off <span class="muted">— set PANOPTICRON_ADMIN_PASSWORD</span>{{end}}</dd>
+  <dt>version</dt><dd class="mono">{{.Version}}</dd>
+</dl>
+
+<h2>pollers</h2>
+<table>
+  <thead><tr><th>job</th><th>every</th><th>last run</th><th>status</th><th>summary</th></tr></thead>
+  <tbody>
+  {{range .Jobs}}<tr>
+    <td class="mono">{{.Name}}</td><td class="mono">{{every .Every}}</td>
+    {{if .Last}}<td class="muted">{{ago $.Now .Last.StartedAt}}</td><td class="run-{{.Last.Status}}">{{.Last.Status}}</td><td>{{.Last.Summary}}</td>
+    {{else}}<td class="muted" colspan="3">not yet</td>{{end}}
+  </tr>{{end}}
+  </tbody>
+</table>
+
+<h2>runs</h2>
+<table>
+  <thead><tr><th>started</th><th>job</th><th>took</th><th>status</th><th>summary</th></tr></thead>
+  <tbody>
+  {{range .Runs}}<tr>
+    <td class="mono muted">{{date .StartedAt}}</td><td class="mono">{{.Job}}</td>
+    <td class="mono">{{if .EndedAt.IsZero}}running{{else}}{{dur (.EndedAt.Sub .StartedAt)}}{{end}}</td>
+    <td class="run-{{.Status}}">{{.Status}}</td><td>{{.Summary}}</td>
+  </tr>{{else}}<tr><td colspan="5" class="muted">no runs yet</td></tr>{{end}}
+  </tbody>
+</table>
+{{template "foot" .}}

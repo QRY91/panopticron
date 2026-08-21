@@ -1,0 +1,5 @@
+/panopticron
+/panopticron.db
+/panopticron.db-*
+/*.db
+.env

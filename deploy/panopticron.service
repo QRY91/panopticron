@@ -1,0 +1,27 @@
+# /etc/systemd/system/panopticron.service
+#
+#   install -m 755 panopticron /usr/local/bin/
+#   install -d /etc/panopticron && install -m 644 projects.toml /etc/panopticron/
+#   printf 'GITHUB_TOKEN=…\nPANOPTICRON_ADMIN_PASSWORD=…\n' > /etc/panopticron/env && chmod 600 /etc/panopticron/env
+#   systemctl enable --now panopticron
+#
+# Put a reverse proxy with TLS in front (Caddy: `panopticron.com { reverse_proxy 127.0.0.1:8080 }`).
+[Unit]
+Description=panopticron — one wall for the owner's web real estate
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+DynamicUser=yes
+StateDirectory=panopticron
+EnvironmentFile=-/etc/panopticron/env
+ExecStart=/usr/local/bin/panopticron -config /etc/panopticron/projects.toml -db /var/lib/panopticron/panopticron.db -listen 127.0.0.1:8080
+Restart=always
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

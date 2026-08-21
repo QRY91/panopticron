@@ -1,0 +1,24 @@
+{{template "head" .}}
+<section class="wall-head">
+  <h1>the wall</h1>
+  <p class="summary">
+    {{len .Projects}} projects ·
+    {{if or .Errors .Warns}}<span class="err">{{.Errors}} red</span> · <span class="wrn">{{.Warns}} yellow</span> tiles{{else}}all quiet{{end}}
+    · sorted by priority, most urgent first · refreshes every minute
+  </p>
+</section>
+<section class="wall">
+{{range .Projects}}
+  <article class="project">
+    {{template "cluster" .Cluster}}
+    <div class="meta">
+      <h2><a href="/p/{{.Name}}">{{.Name}}</a></h2>
+      <div class="score" title="priority sort key — lower is more urgent">{{.SortKey}}{{if .Override}} <span class="ov" title="manual override (calculated {{.Score}})">✎</span>{{end}}</div>
+      <div class="ago">checked {{ago $.Now .Checked}}</div>
+    </div>
+  </article>
+{{else}}
+  <p class="empty-wall">Nothing to watch yet — add projects to projects.toml.</p>
+{{end}}
+</section>
+{{template "foot" .}}

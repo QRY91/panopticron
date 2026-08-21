@@ -1,0 +1,33 @@
+{{define "head"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{.Title}} · panopticron</title>
+<link rel="stylesheet" href="/static/style.css">
+{{if .Refresh}}<meta http-equiv="refresh" content="{{.Refresh}}">{{end}}
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="/">panopticron</a>
+  <nav><a href="/">wall</a><a href="/status">status</a><a href="https://github.com/QRY91/panopticron">source</a></nav>
+</header>
+<main>
+{{end}}
+
+{{define "foot"}}
+</main>
+<footer>garage door open — everyone watches together. <span class="mono">{{.Version}}</span></footer>
+</body>
+</html>
+{{end}}
+
+{{/* A project is a fixed 164px frame: three big tiles for the top problems,
+     four small ones nested in the corner. Same frame for every project, so the
+     wall is scanned by colour alone. */}}
+{{define "cluster"}}<div class="cluster">
+  {{range .Big}}{{template "lens" .}}{{end}}
+  <div class="sub">{{range .Small}}{{template "lens" .}}{{end}}</div>
+</div>{{end}}
+
+{{define "lens"}}{{if not .Kind}}<div class="lens empty"></div>{{else if .Link}}<a class="lens {{.Status}}" href="{{.Link}}" target="_blank" rel="noopener" title="{{.Kind}}: {{.Detail}}"><span class="kind">{{.Kind}}</span><span class="value">{{.Value}}</span></a>{{else}}<div class="lens {{.Status}}" title="{{.Kind}}: {{.Detail}}"><span class="kind">{{.Kind}}</span><span class="value">{{.Value}}</span></div>{{end}}{{end}}

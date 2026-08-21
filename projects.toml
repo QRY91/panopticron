@@ -1,0 +1,42 @@
+# projects.toml — what panopticron watches. Membership lives here, versioned;
+# state and history live in panopticron.db.
+#
+#   name    shown on the wall (unique)
+#   url     probed every 5 minutes: dns, http, tls
+#   domain  registrable domain for the daily RDAP expiry check (default: from url)
+#   repo    GitHub owner/name → ci lens (latest Actions run on the default branch)
+#   pages   Cloudflare Pages project → pages lens (needs CLOUDFLARE_API_TOKEN + CLOUDFLARE_ACCOUNT_ID)
+
+[[project]]
+name = "panopticron.com"
+url  = "https://panopticron.com"
+repo = "QRY91/panopticron"
+
+[[project]]
+name = "qry.zone"
+url  = "https://qry.zone"
+repo = "QRY91/qryzone"
+# pages = "qryzone"
+
+[[project]]
+name = "bokondo.net"
+url  = "https://bokondo.net"
+repo = "QRY91/bokondo"
+# pages = "bokondo"
+
+[[project]]
+name = "chasmlogic.com"
+url  = "https://chasmlogic.com"
+repo = "QRY91/chasm-logic"
+# pages = "chasmlogic"
+
+[[project]]
+name = "sloppydisq.com"
+url  = "https://sloppydisq.com"
+repo = "QRY91/sloppydisq"
+
+[[project]]
+name = "slopsquid.com"
+url  = "https://slopsquid.com"
+repo = "QRY91/slopsquid"
+# pages = "slopsquid"

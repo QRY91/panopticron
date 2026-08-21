@@ -1,0 +1,53 @@
+{{template "head" .}}
+<section class="project-head">
+  {{template "cluster" (cluster .Lenses)}}
+  <div class="meta">
+    <h1>{{.Name}}</h1>
+    <p class="links">{{if .URL}}<a href="{{.URL}}">{{.URL}}</a>{{end}}{{if .Repo}} · <a href="https://github.com/{{.Repo}}">{{.Repo}}</a>{{end}}{{if .Pages}} · pages: {{.Pages}}{{end}}</p>
+    <p class="score">priority <strong>{{.SortKey}}</strong>{{if .Override}} <span class="ov">✎ override</span> <span class="muted">(calculated {{.Score}})</span>{{end}} <span class="muted">· scored {{ago $.Now .ScoredAt}}</span></p>
+  </div>
+</section>
+
+<section>
+  <table class="lenses">
+    <thead><tr><th>lens</th><th>status</th><th>value</th><th>detail</th><th>checked</th><th>since</th></tr></thead>
+    <tbody>
+    {{range .Lenses}}<tr>
+      <td class="mono">{{.Kind}}</td>
+      <td><span class="dot {{.Status}}"></span>{{.Status}}</td>
+      <td class="mono">{{.Value}}</td>
+      <td>{{.Detail}}{{if .Link}} <a href="{{.Link}}" rel="noopener">↗</a>{{end}}</td>
+      <td class="muted">{{ago $.Now .CheckedAt}}</td>
+      <td class="muted">{{ago $.Now .ChangedAt}}</td>
+    </tr>{{else}}<tr><td colspan="6" class="muted">no observations yet</td></tr>{{end}}
+    </tbody>
+  </table>
+</section>
+
+<section class="lifeline-box">
+  <h2>lifeline <span class="ranges">{{range .Ranges}}<a href="?range={{.}}"{{if eq . $.Range}} class="on"{{end}}>{{.}}</a>{{end}}</span></h2>
+  {{.Lifeline}}
+  <p class="hint">Priority over time. 10000 is calm; every problem pulls the line down; 1 is crisis. Hollow points are a human's override.</p>
+</section>
+
+<section class="override-box">
+  <h2>override</h2>
+  {{if .CanOverride}}
+  <form method="post" action="/p/{{.Name}}/override">
+    <label>sort key <input name="override" type="number" min="0" step="1" value="{{if .Override}}{{.Override}}{{end}}" placeholder="{{.Score}}"></label>
+    <button type="submit">set</button>
+    <button type="submit" name="clear" value="1" class="secondary">clear</button>
+  </form>
+  <p class="hint">A human's number beats the calculated one until cleared, and the wall shows ✎ while it does. Asks for the admin password.</p>
+  {{else}}
+  <p class="hint">Overrides are off — set PANOPTICRON_ADMIN_PASSWORD to enable them.</p>
+  {{end}}
+</section>
+
+<section>
+  <h2>events</h2>
+  <ul class="events">
+  {{range .Events}}<li><time class="mono muted">{{date .At}}</time> {{if eq .Kind "priority"}}<strong>priority {{.SortKey}}</strong> <span class="muted">{{.Note}}</span>{{else}}<span class="dot {{.Status}}"></span>{{.Note}}{{end}}</li>{{else}}<li class="muted">nothing yet</li>{{end}}
+  </ul>
+</section>
+{{template "foot" .}}
